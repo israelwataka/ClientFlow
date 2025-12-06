@@ -9,10 +9,18 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true
     },
+    passwordHash: {
+      type: DataTypes.STRING(255),
+      allowNull: false
+    },
     role: {
-      type: DataTypes.ENUM('admin', 'staff'),
+      type: DataTypes.ENUM('admin', 'staff', 'client'),
       allowNull: false,
       defaultValue: 'staff'
+    },
+    clientId: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: true
     }
   });
 

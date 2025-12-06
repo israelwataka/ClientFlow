@@ -1,12 +1,18 @@
 const express = require('express');
 const router = express.Router();
 
-const { Request, Client, Project, User } = require('../models');
+const { Request, Client, Project, User, RequestComment, RequestHistory, RequestAttachment } = require('../models');
 
 // List requests
 router.get('/', async (req, res, next) => {
   try {
+    const where = {};
+    if (req.session.user && req.session.user.role === 'client' && req.session.user.clientId) {
+      where.clientId = req.session.user.clientId;
+    }
+
     const requests = await Request.findAll({
+      where,
       include: [
         { model: Client, as: 'client' },
         { model: Project, as: 'project' },
@@ -41,17 +47,19 @@ router.post('/', async (req, res, next) => {
       clientId,
       projectId,
       responsibleUserId,
-      dueDate
+      dueDate,
+      priority
     } = req.body;
 
     await Request.create({
       title,
       description,
       status: status || 'open',
-      clientId,
+      clientId: clientId || (req.session.user && req.session.user.clientId) || null,
       projectId: projectId || null,
       responsibleUserId: responsibleUserId || null,
-      dueDate: dueDate || null
+      dueDate: dueDate || null,
+      priority: priority || 'medium'
     });
 
     res.redirect('/requests');
@@ -60,15 +68,112 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-// Update status (approve / reject / close)
+// Request detail with comments, history, attachments
+router.get('/:id', async (req, res, next) => {
+  try {
+    const request = await Request.findByPk(req.params.id, {
+      include: [
+        { model: Client, as: 'client' },
+        { model: Project, as: 'project' },
+        {
+          model: RequestComment,
+          as: 'comments',
+          include: [{ model: User, as: 'author' }],
+          order: [['createdAt', 'ASC']]
+        },
+        {
+          model: RequestHistory,
+          as: 'history',
+          include: [{ model: User, as: 'changedBy' }],
+          order: [['createdAt', 'ASC']]
+        },
+        {
+          model: RequestAttachment,
+          as: 'attachments'
+        }
+      ]
+    });
+
+    if (!request) {
+      return res.status(404).render('404', { title: 'Request Not Found' });
+    }
+
+    if (req.session.user && req.session.user.role === 'client' && req.session.user.clientId && request.clientId !== req.session.user.clientId) {
+      return res.status(403).render('404', { title: 'Forbidden' });
+    }
+
+    res.render('requests/show', { title: `Request: ${request.title}`, request });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Add comment
+router.post('/:id/comments', async (req, res, next) => {
+  try {
+    const request = await Request.findByPk(req.params.id);
+    if (!request) {
+      return res.status(404).render('404', { title: 'Request Not Found' });
+    }
+
+    await RequestComment.create({
+      requestId: request.id,
+      body: req.body.body,
+      authorUserId: req.session.user ? req.session.user.id : null
+    });
+
+    res.redirect(`/requests/${request.id}`);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Update status (approve / reject / close) with history note
 router.post('/:id/status', async (req, res, next) => {
   try {
     const request = await Request.findByPk(req.params.id);
     if (!request) {
       return res.status(404).render('404', { title: 'Request Not Found' });
     }
-    await request.update({ status: req.body.status });
-    res.redirect('/requests');
+
+    const oldStatus = request.status;
+    const newStatus = req.body.status;
+    const note = req.body.note || null;
+
+    await request.update({ status: newStatus });
+
+    await RequestHistory.create({
+      requestId: request.id,
+      oldStatus,
+      newStatus,
+      note,
+      changedByUserId: req.session.user ? req.session.user.id : null
+    });
+
+    res.redirect(`/requests/${request.id}`);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Add attachment (metadata only)
+router.post('/:id/attachments', async (req, res, next) => {
+  try {
+    const request = await Request.findByPk(req.params.id);
+    if (!request) {
+      return res.status(404).render('404', { title: 'Request Not Found' });
+    }
+
+    const { filename, url } = req.body;
+    if (filename && url) {
+      await RequestAttachment.create({
+        requestId: request.id,
+        filename,
+        url
+      });
+    }
+
+    res.redirect(`/requests/${request.id}`);
   } catch (err) {
     next(err);
   }

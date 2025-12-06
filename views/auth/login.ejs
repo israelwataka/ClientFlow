@@ -1,0 +1,16 @@
+<section class="page-header">
+  <h1>Login</h1>
+</section>
+
+<form method="post" action="/auth/login" class="form">
+  <% if (error) { %>
+    <p style="color: #dc2626;"><%= error %></p>
+  <% } %>
+  <label>Email
+    <input type="email" name="email" required>
+  </label>
+  <label>Password
+    <input type="password" name="password" required>
+  </label>
+  <button type="submit" class="btn-primary">Sign in</button>
+</form>
