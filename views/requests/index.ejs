@@ -1,0 +1,40 @@
+<section class="page-header">
+  <h1>Requests</h1>
+  <a href="/requests/new" class="btn-primary">New Request</a>
+</section>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Client</th>
+      <th>Project</th>
+      <th>Status</th>
+      <th>Due</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% requests.forEach(function(request) { %>
+      <tr>
+        <td><%= request.title %></td>
+        <td><%= request.client ? request.client.name : '-' %></td>
+        <td><%= request.project ? request.project.name : '-' %></td>
+        <td><%= request.status %></td>
+        <td><%= request.dueDate ? request.dueDate.toDateString() : '-' %></td>
+        <td>
+          <form method="post" action="/requests/<%= request.id %>/status" class="form-inline">
+            <select name="status">
+              <option value="open" <%= request.status === 'open' ? 'selected' : '' %>>Open</option>
+              <option value="in_review" <%= request.status === 'in_review' ? 'selected' : '' %>>In review</option>
+              <option value="approved" <%= request.status === 'approved' ? 'selected' : '' %>>Approved</option>
+              <option value="rejected" <%= request.status === 'rejected' ? 'selected' : '' %>>Rejected</option>
+              <option value="closed" <%= request.status === 'closed' ? 'selected' : '' %>>Closed</option>
+            </select>
+            <button type="submit">Update</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>

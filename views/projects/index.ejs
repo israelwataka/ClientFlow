@@ -1,0 +1,25 @@
+<section class="page-header">
+  <h1>Projects</h1>
+  <a href="/projects/new" class="btn-primary">New Project</a>
+</section>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Client</th>
+      <th>Status</th>
+      <th>Due</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% projects.forEach(function(project) { %>
+      <tr>
+        <td><a href="/projects/<%= project.id %>"><%= project.name %></a></td>
+        <td><%= project.client ? project.client.name : '-' %></td>
+        <td><%= project.status %></td>
+        <td><%= project.dueDate ? project.dueDate.toDateString() : '-' %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>

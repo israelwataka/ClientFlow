@@ -1,0 +1,24 @@
+<section class="page-header">
+  <h1><%= project.name %></h1>
+  <p><strong>Client:</strong> <%= project.client ? project.client.name : '-' %></p>
+</section>
+
+<section>
+  <h2>Details</h2>
+  <p><strong>Status:</strong> <%= project.status %></p>
+  <p><strong>Due date:</strong> <%= project.dueDate ? project.dueDate.toDateString() : '-' %></p>
+  <p><strong>Description:</strong><br><%= project.description || '-' %></p>
+</section>
+
+<section>
+  <h2>Update status</h2>
+  <form method="post" action="/projects/<%= project.id %>/status" class="form-inline">
+    <select name="status">
+      <option value="planned" <%= project.status === 'planned' ? 'selected' : '' %>>Planned</option>
+      <option value="in_progress" <%= project.status === 'in_progress' ? 'selected' : '' %>>In progress</option>
+      <option value="on_hold" <%= project.status === 'on_hold' ? 'selected' : '' %>>On hold</option>
+      <option value="completed" <%= project.status === 'completed' ? 'selected' : '' %>>Completed</option>
+    </select>
+    <button type="submit" class="btn-primary">Update</button>
+  </form>
+</section>
