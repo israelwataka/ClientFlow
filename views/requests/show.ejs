@@ -1,0 +1,104 @@
+<section class="page-header">
+  <h1><%= request.title %></h1>
+  <p>
+    <strong>Client:</strong> <%= request.client ? request.client.name : '-' %> |
+    <strong>Project:</strong> <%= request.project ? request.project.name : '-' %>
+  </p>
+</section>
+
+<section class="two-column">
+  <div>
+    <h2>Details</h2>
+    <p><strong>Status:</strong> <%= request.status %></p>
+    <p><strong>Priority:</strong> <%= request.priority %></p>
+    <p><strong>Due date:</strong> <%= request.dueDate ? request.dueDate.toDateString() : '-' %></p>
+    <p><strong>Description:</strong><br><%= request.description || '-' %></p>
+  </div>
+  <div>
+    <h2>Update status</h2>
+    <form method="post" action="/requests/<%= request.id %>/status" class="form">
+      <label>Status
+        <select name="status">
+          <option value="open" <%= request.status === 'open' ? 'selected' : '' %>>Open</option>
+          <option value="in_review" <%= request.status === 'in_review' ? 'selected' : '' %>>In review</option>
+          <option value="approved" <%= request.status === 'approved' ? 'selected' : '' %>>Approved</option>
+          <option value="rejected" <%= request.status === 'rejected' ? 'selected' : '' %>>Rejected</option>
+          <option value="closed" <%= request.status === 'closed' ? 'selected' : '' %>>Closed</option>
+        </select>
+      </label>
+      <label>Note
+        <textarea name="note" rows="3"></textarea>
+      </label>
+      <button type="submit" class="btn-primary">Update status</button>
+    </form>
+  </div>
+</section>
+
+<section>
+  <h2>Comments</h2>
+  <% if (request.comments && request.comments.length) { %>
+    <ul>
+      <% request.comments.forEach(function(comment) { %>
+        <li>
+          <strong><%= comment.author ? comment.author.name : 'System' %></strong>
+          (<%= comment.createdAt.toLocaleString() %>):<br>
+          <%= comment.body %>
+        </li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p>No comments yet.</p>
+  <% } %>
+
+  <form method="post" action="/requests/<%= request.id %>/comments" class="form">
+    <label>Add a comment
+      <textarea name="body" rows="3" required></textarea>
+    </label>
+    <button type="submit" class="btn-primary">Add Comment</button>
+  </form>
+</section>
+
+<section>
+  <h2>Attachments</h2>
+  <% if (request.attachments && request.attachments.length) { %>
+    <ul>
+      <% request.attachments.forEach(function(att) { %>
+        <li><a href="<%= att.url %>" target="_blank" rel="noopener"><%= att.filename %></a></li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p>No attachments yet.</p>
+  <% } %>
+
+  <form method="post" action="/requests/<%= request.id %>/attachments" class="form">
+    <label>Filename
+      <input type="text" name="filename" required>
+    </label>
+    <label>URL
+      <input type="text" name="url" required>
+    </label>
+    <button type="submit" class="btn-primary">Add Attachment</button>
+  </form>
+</section>
+
+<section>
+  <h2>History</h2>
+  <% if (request.history && request.history.length) { %>
+    <ul>
+      <% request.history.forEach(function(entry) { %>
+        <li>
+          <strong><%= entry.createdAt.toLocaleString() %></strong>:
+          Status <%= entry.oldStatus || 'n/a' %> → <%= entry.newStatus %>
+          <% if (entry.changedBy) { %>
+            by <%= entry.changedBy.name %>
+          <% } %>
+          <% if (entry.note) { %>
+            <br>Note: <%= entry.note %>
+          <% } %>
+        </li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p>No history entries yet.</p>
+  <% } %>
+</section>

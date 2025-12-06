@@ -1,0 +1,29 @@
+<section class="page-header">
+  <h1>Clients</h1>
+  <a href="/clients/new" class="btn-primary">New Client</a>
+</section>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Company</th>
+      <th>Email</th>
+      <th>Phone</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% clients.forEach(function(client) { %>
+      <tr>
+        <td><a href="/clients/<%= client.id %>"><%= client.name %></a></td>
+        <td><%= client.company || '-' %></td>
+        <td><%= client.email || '-' %></td>
+        <td><%= client.phone || '-' %></td>
+        <td>
+          <a href="/clients/<%= client.id %>/edit">Edit</a>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>

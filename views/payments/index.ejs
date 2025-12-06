@@ -1,0 +1,37 @@
+<section class="page-header">
+  <h1>Payments</h1>
+  <a href="/payments/new" class="btn-primary">New Payment</a>
+</section>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Client</th>
+      <th>Amount</th>
+      <th>Status</th>
+      <th>Due</th>
+      <th>Paid at</th>
+      <th>Reference</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% payments.forEach(function(payment) { %>
+      <tr>
+        <td><%= payment.client ? payment.client.name : '-' %></td>
+        <td><%= payment.amount %> <%= payment.currency %></td>
+        <td><%= payment.status %></td>
+        <td><%= payment.dueDate ? payment.dueDate.toDateString() : '-' %></td>
+        <td><%= payment.paidAt ? payment.paidAt.toDateString() : '-' %></td>
+        <td><%= payment.reference || '-' %></td>
+        <td>
+          <% if (payment.status !== 'paid') { %>
+            <form method="post" action="/payments/<%= payment.id %>/mark-paid">
+              <button type="submit">Mark paid</button>
+            </form>
+          <% } %>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>

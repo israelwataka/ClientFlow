@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title || 'ClientFlow' %></title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo">ClientFlow</div>
+    <nav>
+      <% if (currentUser) { %>
+        <a href="/">Dashboard</a>
+        <a href="/clients">Clients</a>
+        <a href="/projects">Projects</a>
+        <a href="/requests">Requests</a>
+        <a href="/payments">Payments</a>
+        <span style="margin-left: 1rem; font-size: 0.85rem;">
+          Signed in as <strong><%= currentUser.name %></strong> (<%= currentUser.role %>)
+        </span>
+        <form method="post" action="/auth/logout" style="display:inline;margin-left:0.5rem;">
+          <button type="submit">Logout</button>
+        </form>
+      <% } else { %>
+        <a href="/auth/login">Login</a>
+      <% } %>
+    </nav>
+  </header>
+  <main class="container">
+    <%- body %>
+  </main>
+</body>
+</html>

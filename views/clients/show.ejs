@@ -1,0 +1,59 @@
+<section class="page-header">
+  <h1><%= client.name %></h1>
+  <p><%= client.company || '' %></p>
+</section>
+
+<section class="two-column">
+  <div>
+    <h2>Details</h2>
+    <p><strong>Email:</strong> <%= client.email || '-' %></p>
+    <p><strong>Phone:</strong> <%= client.phone || '-' %></p>
+    <p><strong>Notes:</strong><br><%= client.notes || '-' %></p>
+  </div>
+
+  <div>
+    <h2>Summary</h2>
+    <p><strong>Projects:</strong> <%= client.projects.length %></p>
+    <p><strong>Requests:</strong> <%= client.requests.length %></p>
+    <p><strong>Payments:</strong> <%= client.payments.length %></p>
+  </div>
+</section>
+
+<section>
+  <h2>Projects</h2>
+  <% if (client.projects.length === 0) { %>
+    <p>No projects yet.</p>
+  <% } else { %>
+    <ul>
+      <% client.projects.forEach(function(project) { %>
+        <li><a href="/projects/<%= project.id %>"><%= project.name %></a> - <%= project.status %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+</section>
+
+<section>
+  <h2>Requests</h2>
+  <% if (client.requests.length === 0) { %>
+    <p>No requests yet.</p>
+  <% } else { %>
+    <ul>
+      <% client.requests.forEach(function(request) { %>
+        <li><a href="/requests"><%= request.title %></a> - <%= request.status %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+</section>
+
+<section>
+  <h2>Payments</h2>
+  <% if (client.payments.length === 0) { %>
+    <p>No payments yet.</p>
+  <% } else { %>
+    <ul>
+      <% client.payments.forEach(function(payment) { %>
+        <li><%= payment.amount %> <%= payment.currency %> - <%= payment.status %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+</section>

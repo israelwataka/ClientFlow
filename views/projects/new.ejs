@@ -1,0 +1,31 @@
+<section class="page-header">
+  <h1>New Project</h1>
+</section>
+
+<form method="post" action="/projects" class="form">
+  <label>Name
+    <input type="text" name="name" required>
+  </label>
+  <label>Client
+    <select name="clientId" required>
+      <% clients.forEach(function(client) { %>
+        <option value="<%= client.id %>"><%= client.name %></option>
+      <% }) %>
+    </select>
+  </label>
+  <label>Description
+    <textarea name="description" rows="4"></textarea>
+  </label>
+  <label>Status
+    <select name="status">
+      <option value="planned">Planned</option>
+      <option value="in_progress">In progress</option>
+      <option value="on_hold">On hold</option>
+      <option value="completed">Completed</option>
+    </select>
+  </label>
+  <label>Due date
+    <input type="date" name="dueDate">
+  </label>
+  <button type="submit" class="btn-primary">Create Project</button>
+</form>
